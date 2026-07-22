@@ -1,0 +1,10 @@
+{
+  "description": "Create stunning coffee cup websites with engaging animations, perfect for coffee shops and enthusiasts looking to enhance their online presence.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
