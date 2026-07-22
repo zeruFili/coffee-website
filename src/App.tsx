@@ -286,91 +286,12 @@ function Navbar() {
   )
 }
 
-function Marquee() {
-  const words = [
-    'USE PREMIUM', '✦', 'FRESH BEANS', '✦', 'ROASTED DAILY', '✦',
-    'LOUNGE COFFEE', '✦', 'SINCE 1998', '✦', 'HAND-PICKED', '✦',
-    'USE PREMIUM', '✦', 'FRESH BEANS', '✦', 'ROASTED DAILY', '✦',
-    'LOUNGE COFFEE', '✦', 'SINCE 1998', '✦', 'HAND-PICKED', '✦',
-  ]
-
-  return (
-    <div className="overflow-hidden py-5" style={{ backgroundColor: '#D4691E' }}>
-      <div className="flex gap-0 whitespace-nowrap animate-marquee" style={{ width: 'max-content' }}>
-        {words.concat(words).map((w, i) => (
-          <span
-            key={i}
-            className="font-display text-3xl tracking-widest px-4"
-            style={{ color: w === '✦' ? 'rgba(255,255,255,0.55)' : 'white' }}
-          >
-            {w}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function CTA() {
-  return (
-    <section
-      className="py-32 px-6 flex flex-col items-center text-center"
-      style={{ backgroundColor: '#1A1108' }}
-    >
-      <motion.p
-        className="text-xs font-semibold tracking-[0.3em] uppercase mb-4"
-        style={{ color: '#D4691E' }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        Ready to Order?
-      </motion.p>
-      <motion.h2
-        className="font-display text-6xl md:text-8xl tracking-wider mb-8"
-        style={{ color: '#F2E8D5' }}
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9 }}
-      >
-        YOUR CUP<br />
-        <span style={{ color: '#D4691E' }}>AWAITS</span>
-      </motion.h2>
-      <motion.p
-        className="text-sm max-w-md leading-relaxed mb-10"
-        style={{ color: '#8B7355' }}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.2 }}
-      >
-        Four signature blends. Hand-roasted. Fresh every week. Pick yours and we'll have it at
-        your door in 24 hours.
-      </motion.p>
-      <motion.button
-        className="px-10 py-4 rounded-full text-base font-semibold text-white tracking-wide"
-        style={{ backgroundColor: '#D4691E' }}
-        whileHover={{ scale: 1.06, boxShadow: '0 16px 40px rgba(212,105,30,0.4)' }}
-        whileTap={{ scale: 0.97 }}
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.3 }}
-      >
-        Shop All Blends →
-      </motion.button>
-    </section>
-  )
-}
-
 export default function App() {
   return (
     <main>
       <Navbar />
       <HeroSection />
-      <Marquee />
-      <CTA />
+
     </main>
   )
 }
