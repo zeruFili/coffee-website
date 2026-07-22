@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 
 const cups = [
   {
@@ -68,178 +68,187 @@ function CupSVG({ body, sleeve, accent }: { body: string; sleeve: string; accent
 }
 
 function HeroSection() {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: scrollRef,
     offset: ['start start', 'end end'],
   })
 
-  const cup3Rotate = useTransform(scrollYProgress, [0, 1], [10, 370])
-  const cup3Y = useTransform(scrollYProgress, [0, 1], [0, 650])
-  const infoOpacity = useTransform(scrollYProgress, [0, 0.12, 0.25], [1, 0.6, 0])
-  const glowOpacity = useTransform(scrollYProgress, [0, 0.3, 1], [0.28, 0.1, 0])
+  const cup3RotateRaw = useTransform(scrollYProgress, [0.2, 0.9], [10, 360])
+  const cup3XRaw      = useTransform(scrollYProgress, [0.2, 0.9], [160, 0])
+  const cup3YRaw      = useTransform(scrollYProgress, [0.2, 0.9], [0, 250])
+  const cup3Rotate    = useSpring(cup3RotateRaw, { stiffness: 80, damping: 14, restDelta: 0.2 })
+  const cup3X         = useSpring(cup3XRaw,     { stiffness: 80, damping: 14, restDelta: 0.2 })
+  const cup3Y         = useSpring(cup3YRaw,     { stiffness: 80, damping: 14, restDelta: 0.2 })
+  const infoOpacity   = useTransform(scrollYProgress, [0, 0.12, 0.25], [1, 0.6, 0])
+  const glowOpacity   = useTransform(scrollYProgress, [0, 0.3, 1], [0.28, 0.1, 0])
   const scrollHintOpacity = useTransform(scrollYProgress, [0, 0.04], [1, 0])
 
   const offLeft = -(CUP_W / 2)
   const offTop = -(CUP_H / 2)
 
   return (
-    <div ref={containerRef} style={{ height: '250vh' }} className="relative">
-      <div className="sticky top-0 h-screen overflow-hidden" style={{ backgroundColor: '#F2E8D5' }}>
-        {/* Grain texture */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-20"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
-            backgroundSize: '200px 200px',
-          }}
-        />
-
-        {/* Glow behind active cup */}
-        <motion.div
-          className="absolute rounded-full"
-          style={{
-            left: '50%',
-            top: '50%',
-            width: 360,
-            height: 360,
-            marginLeft: -180,
-            marginTop: -180,
-            backgroundColor: cups[0].accent,
-            filter: 'blur(100px)',
-            opacity: glowOpacity,
-          }}
-        />
-
-        {/* ─── Cup 2 — left, behind ─── */}
-        <motion.div
-          className="absolute"
-          style={{
-            left: '50%',
-            top: '50%',
-            marginLeft: offLeft,
-            marginTop: offTop,
-            x: -155,
-            rotate: -10,
-            zIndex: 20,
-            width: CUP_W,
-            height: CUP_H,
-          }}
-        >
-          <CupSVG body={cups[1].body} sleeve={cups[1].sleeve} accent={cups[1].accent} />
-        </motion.div>
-
-        {/* ─── Cup 1 — center, active ─── */}
-        <motion.div
-          className="absolute"
-          style={{
-            left: '50%',
-            top: '50%',
-            marginLeft: offLeft,
-            marginTop: offTop,
-            rotate: 0,
-            zIndex: 40,
-            width: CUP_W,
-            height: CUP_H,
-          }}
-        >
-          <CupSVG body={cups[0].body} sleeve={cups[0].sleeve} accent={cups[0].accent} />
-        </motion.div>
-
-        {/* ─── Cup 3 — right, scroll-animated ─── */}
-        <motion.div
-          className="absolute"
-          style={{
-            left: '50%',
-            top: '50%',
-            marginLeft: offLeft,
-            marginTop: offTop,
-            x: 160,
-            y: cup3Y,
-            rotate: cup3Rotate,
-            zIndex: 30,
-            width: CUP_W,
-            height: CUP_H,
-          }}
-        >
-          <CupSVG body={cups[2].body} sleeve={cups[2].sleeve} accent={cups[2].accent} />
-        </motion.div>
-
-        {/* ─── Cup 4 — far right, partially visible ─── */}
-        <motion.div
-          className="absolute"
-          style={{
-            left: '50%',
-            top: '50%',
-            marginLeft: offLeft,
-            marginTop: offTop,
-            x: 385,
-            rotate: -14,
-            zIndex: 10,
-            width: CUP_W,
-            height: CUP_H,
-          }}
-        >
-          <CupSVG body={cups[3].body} sleeve={cups[3].sleeve} accent={cups[3].accent} />
-        </motion.div>
-
-        {/* Active cup info overlay */}
-        <motion.div
-          className="absolute inset-0 flex items-center justify-between px-10 md:px-20 pointer-events-none"
-          style={{ opacity: infoOpacity }}
-        >
-          <div className="flex flex-col gap-2 max-w-xs">
-            <span
-              className="text-xs font-semibold tracking-[0.3em] uppercase"
-              style={{ color: cups[0].accent }}
-            >
-              {cups[0].origin}
-            </span>
-            <h2
-              className="font-display text-4xl md:text-6xl lg:text-7xl leading-none"
-              style={{ color: '#1A1108' }}
-            >
-              {cups[0].name}
-            </h2>
-            <p className="text-sm mt-1" style={{ color: '#8B7355' }}>
-              {cups[0].note}
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-3">
-            <span
-              className="font-display text-5xl md:text-7xl tracking-wide"
-              style={{ color: cups[0].accent }}
-            >
-              {cups[0].price}
-            </span>
-            <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: '#8B7355' }}>
-              per cup
-            </span>
-            <div
-              className="mt-4 w-10 h-10 rounded-full flex items-center justify-center font-display text-lg"
-              style={{ backgroundColor: cups[0].accent, color: 'white' }}
-            >
-              01
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Scroll hint */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          style={{ opacity: scrollHintOpacity }}
-        >
-          <span className="text-xs font-semibold tracking-[0.3em] uppercase" style={{ color: '#8B7355' }}>
-            Scroll
-          </span>
-          <motion.div
-            className="w-px h-10 origin-top"
-            style={{ backgroundColor: '#D4691E' }}
-            animate={{ scaleY: [0, 1, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+    <div ref={scrollRef}>
+      <div style={{ height: '250vh' }} className="relative">
+        <div className="sticky top-0 h-screen overflow-hidden" style={{ backgroundColor: '#F2E8D5' }}>
+          {/* Grain texture */}
+          <div
+            className="absolute inset-0 pointer-events-none opacity-20"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E")`,
+              backgroundSize: '200px 200px',
+            }}
           />
-        </motion.div>
+
+          {/* Glow behind active cup */}
+          <motion.div
+            className="absolute rounded-full"
+            style={{
+              left: '50%',
+              top: '50%',
+              width: 360,
+              height: 360,
+              marginLeft: -180,
+              marginTop: -180,
+              backgroundColor: cups[0].accent,
+              filter: 'blur(100px)',
+              opacity: glowOpacity,
+            }}
+          />
+
+          {/* Cup 2 — left, behind */}
+          <motion.div
+            className="absolute"
+            style={{
+              left: '50%',
+              top: '50%',
+              marginLeft: offLeft,
+              marginTop: offTop,
+              x: -155,
+              rotate: -10,
+              zIndex: 20,
+              width: CUP_W,
+              height: CUP_H,
+            }}
+          >
+            <CupSVG body={cups[1].body} sleeve={cups[1].sleeve} accent={cups[1].accent} />
+          </motion.div>
+
+          {/* Cup 1 — center, active */}
+          <motion.div
+            className="absolute"
+            style={{
+              left: '50%',
+              top: '50%',
+              marginLeft: offLeft,
+              marginTop: offTop,
+              rotate: 0,
+              zIndex: 40,
+              width: CUP_W,
+              height: CUP_H,
+            }}
+          >
+            <CupSVG body={cups[0].body} sleeve={cups[0].sleeve} accent={cups[0].accent} />
+          </motion.div>
+
+          {/* Cup 4 — far right, partially visible */}
+          <motion.div
+            className="absolute"
+            style={{
+              left: '50%',
+              top: '50%',
+              marginLeft: offLeft,
+              marginTop: offTop,
+              x: 385,
+              rotate: -14,
+              zIndex: 10,
+              width: CUP_W,
+              height: CUP_H,
+            }}
+          >
+            <CupSVG body={cups[3].body} sleeve={cups[3].sleeve} accent={cups[3].accent} />
+          </motion.div>
+
+          {/* Active cup info overlay */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-between px-10 md:px-20 pointer-events-none"
+            style={{ opacity: infoOpacity }}
+          >
+            <div className="flex flex-col gap-2 max-w-xs">
+              <span
+                className="text-xs font-semibold tracking-[0.3em] uppercase"
+                style={{ color: cups[0].accent }}
+              >
+                {cups[0].origin}
+              </span>
+              <h2
+                className="font-display text-4xl md:text-6xl lg:text-7xl leading-none"
+                style={{ color: '#1A1108' }}
+              >
+                {cups[0].name}
+              </h2>
+              <p className="text-sm mt-1" style={{ color: '#8B7355' }}>
+                {cups[0].note}
+              </p>
+            </div>
+            <div className="flex flex-col items-end gap-3">
+              <span
+                className="font-display text-5xl md:text-7xl tracking-wide"
+                style={{ color: cups[0].accent }}
+              >
+                {cups[0].price}
+              </span>
+              <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: '#8B7355' }}>
+                per cup
+              </span>
+              <div
+                className="mt-4 w-10 h-10 rounded-full flex items-center justify-center font-display text-lg"
+                style={{ backgroundColor: cups[0].accent, color: 'white' }}
+              >
+                01
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Scroll hint */}
+          <motion.div
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+            style={{ opacity: scrollHintOpacity }}
+          >
+            <span className="text-xs font-semibold tracking-[0.3em] uppercase" style={{ color: '#8B7355' }}>
+              Scroll
+            </span>
+            <motion.div
+              className="w-px h-10 origin-top"
+              style={{ backgroundColor: '#D4691E' }}
+              animate={{ scaleY: [0, 1, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </motion.div>
+        </div>
       </div>
+
+      {/* Empty landing section */}
+      <div style={{ height: '100vh', backgroundColor: '#F2E8D5' }} className="relative" />
+
+      {/* Cup 3 — fixed, animates from hero right side into landing section center */}
+      <motion.div
+        className="fixed pointer-events-none"
+        style={{
+          left: '50%',
+          top: '50%',
+          marginLeft: offLeft,
+          marginTop: offTop,
+          x: cup3X,
+          y: cup3Y,
+          rotate: cup3Rotate,
+          zIndex: 50,
+          width: CUP_W,
+          height: CUP_H,
+        }}
+      >
+        <CupSVG body={cups[2].body} sleeve={cups[2].sleeve} accent={cups[2].accent} />
+      </motion.div>
     </div>
   )
 }
@@ -291,7 +300,6 @@ export default function App() {
     <main>
       <Navbar />
       <HeroSection />
-
     </main>
   )
 }
