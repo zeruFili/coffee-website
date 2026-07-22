@@ -74,9 +74,9 @@ function HeroSection() {
     offset: ['start start', 'end end'],
   })
 
-  const cup3RotateRaw = useTransform(scrollYProgress, [0.2, 0.9], [10, 360])
-  const cup3XRaw      = useTransform(scrollYProgress, [0.2, 0.9], [160, 0])
-  const cup3YRaw      = useTransform(scrollYProgress, [0.2, 0.9], [0, 250])
+  const cup3RotateRaw = useTransform(scrollYProgress, [0, 0.9], [10, 360])
+  const cup3XRaw      = useTransform(scrollYProgress, [0, 0.9], [160, 0])
+  const cup3YRaw      = useTransform(scrollYProgress, [0, 0.9], [0, 350])
   const cup3Rotate    = useSpring(cup3RotateRaw, { stiffness: 80, damping: 14, restDelta: 0.2 })
   const cup3X         = useSpring(cup3XRaw,     { stiffness: 80, damping: 14, restDelta: 0.2 })
   const cup3Y         = useSpring(cup3YRaw,     { stiffness: 80, damping: 14, restDelta: 0.2 })
